@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Year 9 Probability Interactive Lab</title>
+    <style>
+        :root {
+            --bg-primary: #0b1329;
+            --bg-card: #152238;
+            --accent-cyan: #06b6d4;
+            --accent-gold: #f59e0b;
+            --text-light: #f1f5f9;
+            --text-dim: #94a3b8;
+            --border-color: #334155;
+            --die-size: 80px;
+        }
+
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-light);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .lab-shell {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        header h1 { margin: 0; font-size: 1.35rem; color: var(--accent-cyan); }
+        header p { margin: 2px 0 0 0; color: var(--text-dim); font-size: 0.85rem; }
+
+        .class-badge-container { display: flex; gap: 10px; }
+        select, input[type="text"] {
+            background: #090e1a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Nav Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 8px;
+            background: #090e1a;
+            padding: 6px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-cyan);
+            color: #030712;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Workspace Grid */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 900px) {
+            .workspace { grid-template-columns: 1fr; }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .panel-title {
+            font-size: 1.05rem;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 3D Dice Stage */
+        .dice-stage {
+            height: 210px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #050b14;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            perspective: 800px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dice-wrapper {
+            position: relative;
+            width: var(--die-size);
+            height: var(--die-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cube {
+            width: var(--die-size);
+            height: var(--die-size);
+            position: absolute;
+            transform-style: preserve-3d;
+            transform: rotateX(-18deg) rotateY(24deg);
+            transition: transform 0.7s cubic-bezier(0.18, 0.9, 0.32, 1.2);
+        }
+
+        .cube.rolling {
+            animation: tumbleToss 0.7s ease-in-out infinite alternate;
+        }
+
+        @keyframes tumbleToss {
+            0% { transform: translateY(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+            50% { transform: translateY(-45px) rotateX(360deg) rotateY(180deg) rotateZ(90deg); }
+            100% { transform: translateY(0) rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+        }
+
+        .shadow {
+            width: 70px;
+            height: 18px;
+            background: rgba(0, 0, 0, 0.55);
+            border-radius: 50%;
+            filter: blur(5px);
+            margin-top: 100px;
+            transition: 0.3s;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: var(--die-size);
+            height: var(--die-size);
+            background: #ffffff;
+            border: 2px solid #94a3b8;
+            border-radius: 14px;
+            display: grid;
+            padding: 8px;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.2), 0 0 2px rgba(0,0,0,0.5);
+            backface-visibility: hidden;
+        }
+
+        .pip {
+            display: block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #0f172a;
+            justify-self: center;
+            align-self: center;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.7);
+        }
+
+        /* Face Mapping */
+        .face-1 { transform: rotateY(0deg) translateZ(40px); display: grid; grid-template-areas: "a"; }
+        .face-1 .pip { grid-area: a; background: #dc2626; width: 18px; height: 18px; }
+        .face-6 { transform: rotateY(180deg) translateZ(40px); display: grid; grid-template-columns: 1fr 1fr; grid-gap: 4px; }
+        .face-2 { transform: rotateY(90deg) translateZ(40px); display: flex; justify-content: space-between; }
+        .face-2 .pip:nth-child(2) { align-self: flex-end; }
+        .face-4 { transform: rotateY(-90deg) translateZ(40px); display: grid; grid-template-columns: 1fr 1fr; grid-gap: 14px; }
+        .face-3 { transform: rotateX(90deg) translateZ(40px); display: flex; justify-content: space-between; }
+        .face-3 .pip:nth-child(2) { align-self: center; }
+        .face-3 .pip:nth-child(3) { align-self: flex-end; }
+        .face-5 { transform: rotateX(-90deg) translateZ(40px); display: grid; grid-template-columns: 1fr 1fr; position: relative; }
+        .face-5 .pip-c { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+        /* Plinko Canvas */
+        .canvas-holder {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #cfe8fc;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        canvas { width: 100%; height: 100%; }
+
+        /* Marbles Stage */
+        .jar-stage {
+            height: 210px;
+            background: #050b14;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            padding: 10px;
+        }
+
+        .glass-jar {
+            width: 120px;
+            height: 160px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-top: 6px solid rgba(255,255,255,0.7);
+            border-radius: 10px 10px 24px 24px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-end;
+            justify-content: center;
+            gap: 5px;
+            padding: 10px;
+        }
+
+        .marble-ball {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: inset -2px -2px 3px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .marble-red { background: radial-gradient(circle at 5px 5px, #fca5a5, #dc2626); }
+        .marble-blue { background: radial-gradient(circle at 5px 5px, #93c5fd, #2563eb); }
+        .marble-gold { background: radial-gradient(circle at 5px 5px, #fde68a, #d97706); }
+
+        .draw-reveal-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+        }
+
+        .drawn-slot {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px dashed #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            background: #090e1a;
+        }
+
+        /* Simplified Controls */
+        .sim-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        button.btn-action {
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button.btn-action.primary {
+            flex: 3;
+            background: var(--accent-cyan);
+            color: #030712;
+        }
+
+        button.btn-action.primary:hover {
+            filter: brightness(1.1);
+        }
+
+        button.btn-action.clear {
+            flex: 1;
+            background: #1e293b;
+            color: #f87171;
+        }
+
+        button.btn-action.clear:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--text-dim); }
+
+        .bar-shell {
+            background: #090e1a;
+            height: 12px;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            margin-top: 4px;
+        }
+        .bar-fill { background: var(--accent-cyan); height: 100%; width: 0%; transition: width 0.2s ease-out; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="lab-shell">
+    <header>
+        <div>
+            <h1>🔬 Experimental Probability & Relative Frequency Lab</h1>
+            <p>Stage 5 / Year 9 Mathematics Probability Experiment</p>
+        </div>
+        <div class="class-badge-container">
+            <select id="classSelect">
+                <option value="9MA1">9MA1 — Ms Park</option>
+                <option value="9MA2">9MA2 — Mr Arnold</option>
+            </select>
+            <input type="text" id="tableId" placeholder="Table Group / Names" style="width: 190px;">
+        </div>
+    </header>
+
+    <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('dice')">1. 3D Tumbling Die</button>
+        <button class="tab-btn" onclick="switchTab('galton')">2. Plinko Pegboard</button>
+        <button class="tab-btn" onclick="switchTab('marble')">3. Marble Draw (Lucky Dip)</button>
+    </div>
+
+    <div id="tab-dice" class="workspace">
+        <div class="panel">
+            <div class="panel-title">
+                <span>3D Physical Die Roller</span>
+                <span id="diceTotalRolls" style="color: var(--accent-gold);">Total Rolls: 0</span>
+            </div>
+            
+            <div class="dice-stage">
+                <div class="dice-wrapper">
+                    <div class="cube" id="cube3d">
+                        <div class="cube-face face-1"><span class="pip"></span></div>
+                        <div class="cube-face face-2"><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-3"><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-4"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-5"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip pip-c"></span></div>
+                        <div class="cube-face face-6"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                    </div>
+                </div>
+                <div class="shadow" id="dieShadow"></div>
+            </div>
+
+            <div class="sim-controls">
+                <button class="btn-action primary" onclick="rollDie()">🎲 Roll Die</button>
+                <button class="btn-action clear" onclick="resetDie()">Clear</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title"><span>Experimental Results</span></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Outcome Face</th>
+                        <th>Frequency ($f$)</th>
+                        <th>Relative Frequency ($f/n$)</th>
+                    </tr>
+                </thead>
+                <tbody id="diceTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-galton" class="workspace hidden">
+        <div class="panel">
+            <div class="panel-title">
+                <span>Triangular Plinko Pegboard</span>
+                <span id="galtonTotalDrops" style="color: var(--accent-gold);">N = 0</span>
+            </div>
+            <div class="canvas-holder">
+                <canvas id="galtonCanvas" width="500" height="400"></canvas>
+            </div>
+            <div class="sim-controls">
+                <button class="btn-action primary" onclick="dropPlinkoBall()">🔴 Drop Ball</button>
+                <button class="btn-action clear" onclick="resetPlinko()">Clear</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title"><span>Experimental Results</span></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bin Number</th>
+                        <th>Frequency ($f$)</th>
+                        <th>Relative Frequency ($f/n$)</th>
+                    </tr>
+                </thead>
+                <tbody id="galtonTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-marble" class="workspace hidden">
+        <div class="panel">
+            <div class="panel-title">
+                <span>Mystery Marble Jar (10 Marbles)</span>
+                <span id="marbleTotalDraws" style="color: var(--accent-gold);">Draws: 0</span>
+            </div>
+            <div class="jar-stage">
+                <div class="glass-jar">
+                    <span class="marble-ball marble-red"></span><span class="marble-ball marble-red"></span><span class="marble-ball marble-red"></span><span class="marble-ball marble-red"></span><span class="marble-ball marble-red"></span>
+                    <span class="marble-ball marble-blue"></span><span class="marble-ball marble-blue"></span><span class="marble-ball marble-blue"></span>
+                    <span class="marble-ball marble-gold"></span><span class="marble-ball marble-gold"></span>
+                </div>
+                <div class="draw-reveal-box">
+                    <div class="drawn-slot" id="drawnMarbleVisual">❓</div>
+                    <span id="drawnLabel" style="font-size: 0.85rem; color: var(--text-dim);">Ready to Draw</span>
+                </div>
+            </div>
+            <div class="sim-controls">
+                <button class="btn-action primary" onclick="drawMarble()">🔮 Draw Marble</button>
+                <button class="btn-action clear" onclick="resetMarbles()">Clear</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title"><span>Experimental Results</span></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Marble Color</th>
+                        <th>Frequency ($f$)</th>
+                        <th>Relative Frequency ($f/n$)</th>
+                    </tr>
+                </thead>
+                <tbody id="marbleTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Tab switching
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.workspace').forEach(w => w.classList.add('hidden'));
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tab}`).classList.remove('hidden');
+        if (tab === 'galton') drawPlinkoScene();
+    }
+
+    // Audio synthesizer
+    let audioCtx = null;
+    function playDiceSound() {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(140 + Math.random() * 80, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        } catch (e) {}
+    }
+
+    /* SIM 1: 3D DIE */
+    let dieCounts = [0, 0, 0, 0, 0, 0, 0];
+    let totalDieRolls = 0;
+    const faceRotations = {
+        1: { x: 0, y: 0 },
+        2: { x: 0, y: -90 },
+        3: { x: -90, y: 0 },
+        4: { x: 0, y: 90 },
+        5: { x: 90, y: 0 },
+        6: { x: 0, y: 180 }
+    };
+    let isDieRolling = false;
+
+    function renderDieTable() {
+        const tbody = document.getElementById('diceTableBody');
+        tbody.innerHTML = '';
+        for (let face = 1; face <= 6; face++) {
+            const count = dieCounts[face];
+            const relFreq = totalDieRolls > 0 ? count / totalDieRolls : 0;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>Face ${face}</strong></td>
+                <td>${count}</td>
+                <td>
+                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                    <div class="bar-shell">
+                        <div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+        document.getElementById('diceTotalRolls').innerText = `Total Rolls: ${totalDieRolls.toLocaleString()}`;
+    }
+
+    function rollDie() {
+        if (isDieRolling) return;
+        isDieRolling = true;
+        const cube = document.getElementById('cube3d');
+        cube.classList.add('rolling');
+        playDiceSound();
+        setTimeout(playDiceSound, 120);
+
+        const result = Math.floor(Math.random() * 6) + 1;
+        setTimeout(() => {
+            cube.classList.remove('rolling');
+            const rot = faceRotations[result];
+            cube.style.transform = `rotateX(${rot.x + 720}deg) rotateY(${rot.y + 720}deg)`;
+            dieCounts[result]++;
+            totalDieRolls++;
+            renderDieTable();
+            isDieRolling = false;
+        }, 600);
+    }
+
+    function resetDie() {
+        dieCounts = [0, 0, 0, 0, 0, 0, 0];
+        totalDieRolls = 0;
+        document.getElementById('cube3d').style.transform = 'rotateX(-18deg) rotateY(24deg)';
+        renderDieTable();
+    }
+
+    /* SIM 2: PLINKO */
+    const PLINKO_ROWS = 7;
+    const PLINKO_BINS = PLINKO_ROWS + 1;
+    let plinkoBinCounts = new Array(PLINKO_BINS).fill(0);
+    let plinkoTotalBalls = 0;
+    let plinkoAnimatedBalls = [];
+    let restingBallVisuals = [];
+    const pCanvas = document.getElementById('galtonCanvas');
+    const pCtx = pCanvas.getContext('2d');
+
+    function renderPlinkoTable() {
+        const tbody = document.getElementById('galtonTableBody');
+        tbody.innerHTML = '';
+        for (let k = 0; k < PLINKO_BINS; k++) {
+            const count = plinkoBinCounts[k];
+            const relFreq = plinkoTotalBalls > 0 ? count / plinkoTotalBalls : 0;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>Bin ${k}</strong></td>
+                <td>${count}</td>
+                <td>
+                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                    <div class="bar-shell">
+                        <div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        }
+        document.getElementById('galtonTotalDrops').innerText = `N = ${plinkoTotalBalls.toLocaleString()}`;
+    }
+
+    function drawPlinkoScene() {
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        const w = pCanvas.width;
+        const topY = 25;
+        const boardHeight = 210;
+
+        // Pegboard
+        pCtx.fillStyle = '#e2c99a';
+        pCtx.beginPath();
+        pCtx.moveTo(w / 2, topY);
+        pCtx.lineTo(w / 2 + 185, topY + boardHeight);
+        pCtx.lineTo(w / 2 - 185, topY + boardHeight);
+        pCtx.closePath();
+        pCtx.fill();
+        pCtx.strokeStyle = '#c5a873';
+        pCtx.lineWidth = 2;
+        pCtx.stroke();
+
+        // Pegs
+        const rowDist = 26;
+        const pegColDist = 34;
+        for (let r = 0; r < PLINKO_ROWS; r++) {
+            const countInRow = r + 1;
+            const startX = w / 2 - ((countInRow - 1) * pegColDist) / 2;
+            for (let p = 0; p < countInRow; p++) {
+                const px = startX + p * pegColDist;
+                const py = topY + 28 + r * rowDist;
+                pCtx.fillStyle = '#473a2b';
+                pCtx.beginPath();
+                pCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+                pCtx.fill();
+            }
+        }
+
+        // Bins
+        const binWidth = 36;
+        const binHeight = 140;
+        const binBaseY = 390;
+        const binStartX = (w - (PLINKO_BINS * binWidth)) / 2;
+
+        for (let b = 0; b < PLINKO_BINS; b++) {
+            const bx = binStartX + b * binWidth;
+            const by = binBaseY - binHeight;
+            let cylGrad = pCtx.createLinearGradient(bx, 0, bx + binWidth, 0);
+            cylGrad.addColorStop(0, '#94a3b8');
+            cylGrad.addColorStop(0.5, '#e2e8f0');
+            cylGrad.addColorStop(1, '#64748b');
+            pCtx.fillStyle = cylGrad;
+            pCtx.fillRect(bx, by, binWidth, binHeight);
+            pCtx.strokeStyle = '#475569';
+            pCtx.strokeRect(bx, by, binWidth, binHeight);
+        }
+
+        // Resting Balls
+        restingBallVisuals.forEach(ball => {
+            pCtx.fillStyle = '#ef4444';
+            pCtx.beginPath();
+            pCtx.arc(ball.x, ball.y, 6, 0, Math.PI * 2);
+            pCtx.fill();
+        });
+
+        // Falling Balls
+        for (let i = plinkoAnimatedBalls.length - 1; i >= 0; i--) {
+            const b = plinkoAnimatedBalls[i];
+            const pt = b.path[Math.floor(b.step)];
+            pCtx.fillStyle = '#dc2626';
+            pCtx.beginPath();
+            pCtx.arc(pt.x, pt.y, 6, 0, Math.PI * 2);
+            pCtx.fill();
+
+            b.step += 0.35;
+            if (b.step >= b.path.length) {
+                plinkoBinCounts[b.finalBin]++;
+                plinkoTotalBalls++;
+                const countInBin = plinkoBinCounts[b.finalBin];
+                if (countInBin <= 14) {
+                    const binX = binStartX + b.finalBin * binWidth + binWidth / 2;
+                    restingBallVisuals.push({ x: binX + (Math.random() * 6 - 3), y: binBaseY - 8 - (countInBin - 1) * 8 });
+                }
+                plinkoAnimatedBalls.splice(i, 1);
+                renderPlinkoTable();
+            }
+        }
+    }
+
+    function dropPlinkoBall() {
+        const w = pCanvas.width;
+        const topY = 25;
+        const rowDist = 26;
+        const pegColDist = 34;
+        const binWidth = 36;
+        const binStartX = (w - (PLINKO_BINS * binWidth)) / 2;
+
+        let curX = w / 2;
+        let curY = topY;
+        let rightSteps = 0;
+        let path = [{x: curX, y: curY}];
+
+        for (let r = 0; r < PLINKO_ROWS; r++) {
+            const goRight = Math.random() < 0.5;
+            if (goRight) rightSteps++;
+            curY = topY + 28 + r * rowDist;
+            curX += (goRight ? pegColDist / 2 : -pegColDist / 2);
+            path.push({x: curX, y: curY});
+        }
+
+        const targetBinX = binStartX + rightSteps * binWidth + binWidth / 2;
+        path.push({x: targetBinX, y: 260});
+        path.push({x: targetBinX, y: 350});
+        plinkoAnimatedBalls.push({ step: 0, path: path, finalBin: rightSteps });
+    }
+
+    function resetPlinko() {
+        plinkoBinCounts = new Array(PLINKO_BINS).fill(0);
+        plinkoTotalBalls = 0;
+        plinkoAnimatedBalls = [];
+        restingBallVisuals = [];
+        renderPlinkoTable();
+        drawPlinkoScene();
+    }
+    setInterval(drawPlinkoScene, 1000 / 60);
+
+    /* SIM 3: MARBLE DRAW */
+    const marbleTypes = [
+        { id: "red", name: "🔴 Red", color: "#ef4444" },
+        { id: "blue", name: "🔵 Blue", color: "#3b82f6" },
+        { id: "gold", name: "🟡 Gold", color: "#f59e0b" }
+    ];
+    let marbleCounts = { red: 0, blue: 0, gold: 0 };
+    let totalMarbleDraws = 0;
+
+    function renderMarbleTable() {
+        const tbody = document.getElementById('marbleTableBody');
+        tbody.innerHTML = '';
+        marbleTypes.forEach(m => {
+            const count = marbleCounts[m.id];
+            const relFreq = totalMarbleDraws > 0 ? count / totalMarbleDraws : 0;
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong style="color:${m.color}">${m.name}</strong></td>
+                <td>${count}</td>
+                <td>
+                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                    <div class="bar-shell">
+                        <div class="bar-fill" style="width: ${Math.min(relFreq * 200, 100)}%; background: ${m.color};"></div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+        document.getElementById('marbleTotalDraws').innerText = `Draws: ${totalMarbleDraws.toLocaleString()}`;
+    }
+
+    function drawMarble() {
+        const pick = () => {
+            const r = Math.random();
+            return r < 0.5 ? "red" : (r < 0.8 ? "blue" : "gold");
+        };
+
+        const drawn = pick();
+        document.getElementById('drawnMarbleVisual').innerHTML = `<span class="marble-ball marble-${drawn}" style="width: 32px; height: 32px;"></span>`;
+        document.getElementById('drawnLabel').innerText = `Drawn: ${drawn.toUpperCase()}`;
+        marbleCounts[drawn]++;
+        totalMarbleDraws++;
+        renderMarbleTable();
+    }
+
+    function resetMarbles() {
+        marbleCounts = { red: 0, blue: 0, gold: 0 };
+        totalMarbleDraws = 0;
+        document.getElementById('drawnMarbleVisual').innerText = "❓";
+        document.getElementById('drawnLabel').innerText = "Ready to Draw";
+        renderMarbleTable();
+    }
+
+    // Initial table rendering
+    renderDieTable();
+    renderPlinkoTable();
+    drawPlinkoScene();
+    renderMarbleTable();
+</script>
+
+</body>
+</html>
