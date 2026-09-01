@@ -10,6 +10,7 @@
             --bg-card: #152238;
             --accent-cyan: #06b6d4;
             --accent-gold: #f59e0b;
+            --accent-green: #10b981;
             --text-light: #f1f5f9;
             --text-dim: #94a3b8;
             --border-color: #334155;
@@ -43,12 +44,14 @@
             padding: 14px 20px;
             border-radius: 12px;
             border: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         header h1 { margin: 0; font-size: 1.35rem; color: var(--accent-cyan); }
         header p { margin: 2px 0 0 0; color: var(--text-dim); font-size: 0.85rem; }
 
-        .class-badge-container { display: flex; gap: 10px; }
+        .class-badge-container { display: flex; gap: 10px; flex-wrap: wrap; }
         select, input[type="text"] {
             background: #090e1a;
             border: 1px solid var(--border-color);
@@ -58,7 +61,6 @@
             font-size: 0.9rem;
         }
 
-        /* Nav Tabs */
         .tab-bar {
             display: flex;
             gap: 8px;
@@ -87,7 +89,6 @@
             box-shadow: 0 0 12px rgba(6, 182, 212, 0.4);
         }
 
-        /* Workspace Grid */
         .workspace {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -116,6 +117,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .target-badge {
+            font-size: 0.82rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        .target-badge.completed {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
         }
 
         /* 3D Dice Stage */
@@ -168,7 +185,6 @@
             border-radius: 50%;
             filter: blur(5px);
             margin-top: 100px;
-            transition: 0.3s;
         }
 
         .cube-face {
@@ -192,10 +208,8 @@
             background: #0f172a;
             justify-self: center;
             align-self: center;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.7);
         }
 
-        /* Face Mapping */
         .face-1 { transform: rotateY(0deg) translateZ(40px); display: grid; grid-template-areas: "a"; }
         .face-1 .pip { grid-area: a; background: #dc2626; width: 18px; height: 18px; }
         .face-6 { transform: rotateY(180deg) translateZ(40px); display: grid; grid-template-columns: 1fr 1fr; grid-gap: 4px; }
@@ -208,7 +222,7 @@
         .face-5 { transform: rotateX(-90deg) translateZ(40px); display: grid; grid-template-columns: 1fr 1fr; position: relative; }
         .face-5 .pip-c { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-        /* Plinko Canvas */
+        /* Canvas & Jar */
         .canvas-holder {
             position: relative;
             width: 100%;
@@ -220,7 +234,6 @@
         }
         canvas { width: 100%; height: 100%; }
 
-        /* Marbles Stage */
         .jar-stage {
             height: 210px;
             background: #050b14;
@@ -278,12 +291,8 @@
             background: #090e1a;
         }
 
-        /* Simplified Controls */
-        .sim-controls {
-            display: flex;
-            gap: 12px;
-        }
-
+        /* Buttons & Tables */
+        .sim-controls { display: flex; gap: 12px; }
         button.btn-action {
             padding: 12px 16px;
             border: 1px solid var(--border-color);
@@ -293,29 +302,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        button.btn-action.primary { flex: 3; background: var(--accent-cyan); color: #030712; }
+        button.btn-action.clear { flex: 1; background: #1e293b; color: #f87171; }
+        button.btn-action.clear:hover { background: #ef4444; color: #fff; }
 
-        button.btn-action.primary {
-            flex: 3;
-            background: var(--accent-cyan);
-            color: #030712;
-        }
-
-        button.btn-action.primary:hover {
-            filter: brightness(1.1);
-        }
-
-        button.btn-action.clear {
-            flex: 1;
-            background: #1e293b;
-            color: #f87171;
-        }
-
-        button.btn-action.clear:hover {
-            background: #ef4444;
-            color: #fff;
-        }
-
-        /* Table */
         table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { color: var(--text-dim); }
@@ -329,6 +319,32 @@
             margin-top: 4px;
         }
         .bar-fill { background: var(--accent-cyan); height: 100%; width: 0%; transition: width 0.2s ease-out; }
+
+        /* Submission Bar */
+        .export-card {
+            background: #101c36;
+            border: 1px solid #1e3a8a;
+            padding: 16px 20px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .submit-btn {
+            background: var(--accent-green);
+            color: #030712;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: 0.2s;
+        }
+        .submit-btn:hover { filter: brightness(1.1); }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -338,100 +354,28 @@
     <header>
         <div>
             <h1>🔬 Experimental Probability & Relative Frequency Lab</h1>
-            <p>Stage 5 / Year 9 Mathematics Probability Experiment</p>
+            <p>Target: Complete 30 trials per task, then submit your table data to the Master Class Spreadsheet.</p>
         </div>
         <div class="class-badge-container">
             <select id="classSelect">
-                <option value="9MA1">9MA1 — Ms Park</option>
-                <option value="9MA2">9MA2 — Mr Arnold</option>
+                <option value="9MA1 - Ms Park">9MA1 — Ms Park</option>
+                <option value="9MA2 - Mr Arnold">9MA2 — Mr Arnold</option>
             </select>
-            <input type="text" id="tableId" placeholder="Table Group / Names" style="width: 190px;">
+            <input type="text" id="tableId" placeholder="Table # (e.g. Table 3)" style="width: 200px;">
         </div>
     </header>
 
     <div class="tab-bar">
-        <button class="tab-btn active" onclick="switchTab('dice')">1. 3D Tumbling Die</button>
-        <button class="tab-btn" onclick="switchTab('galton')">2. Plinko Pegboard</button>
-        <button class="tab-btn" onclick="switchTab('marble')">3. Marble Draw (Lucky Dip)</button>
+        <button class="tab-btn active" onclick="switchTab('marble')">Task 1: Marble Draw</button>
+        <button class="tab-btn" onclick="switchTab('dice')">Task 2: 3D Tumbling Die</button>
+        <button class="tab-btn" onclick="switchTab('galton')">Task 3: Plinko Pegboard</button>
     </div>
 
-    <div id="tab-dice" class="workspace">
-        <div class="panel">
-            <div class="panel-title">
-                <span>3D Physical Die Roller</span>
-                <span id="diceTotalRolls" style="color: var(--accent-gold);">Total Rolls: 0</span>
-            </div>
-            
-            <div class="dice-stage">
-                <div class="dice-wrapper">
-                    <div class="cube" id="cube3d">
-                        <div class="cube-face face-1"><span class="pip"></span></div>
-                        <div class="cube-face face-2"><span class="pip"></span><span class="pip"></span></div>
-                        <div class="cube-face face-3"><span class="pip"></span><span class="pip"></span></div>
-                        <div class="cube-face face-4"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
-                        <div class="cube-face face-5"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip pip-c"></span></div>
-                        <div class="cube-face face-6"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
-                    </div>
-                </div>
-                <div class="shadow" id="dieShadow"></div>
-            </div>
-
-            <div class="sim-controls">
-                <button class="btn-action primary" onclick="rollDie()">🎲 Roll Die</button>
-                <button class="btn-action clear" onclick="resetDie()">Clear</button>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title"><span>Experimental Results</span></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Outcome Face</th>
-                        <th>Frequency ($f$)</th>
-                        <th>Relative Frequency ($f/n$)</th>
-                    </tr>
-                </thead>
-                <tbody id="diceTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="tab-galton" class="workspace hidden">
-        <div class="panel">
-            <div class="panel-title">
-                <span>Triangular Plinko Pegboard</span>
-                <span id="galtonTotalDrops" style="color: var(--accent-gold);">N = 0</span>
-            </div>
-            <div class="canvas-holder">
-                <canvas id="galtonCanvas" width="500" height="400"></canvas>
-            </div>
-            <div class="sim-controls">
-                <button class="btn-action primary" onclick="dropPlinkoBall()">🔴 Drop Ball</button>
-                <button class="btn-action clear" onclick="resetPlinko()">Clear</button>
-            </div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title"><span>Experimental Results</span></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Bin Number</th>
-                        <th>Frequency ($f$)</th>
-                        <th>Relative Frequency ($f/n$)</th>
-                    </tr>
-                </thead>
-                <tbody id="galtonTableBody"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="tab-marble" class="workspace hidden">
+    <div id="tab-marble" class="workspace">
         <div class="panel">
             <div class="panel-title">
                 <span>Mystery Marble Jar (10 Marbles)</span>
-                <span id="marbleTotalDraws" style="color: var(--accent-gold);">Draws: 0</span>
+                <span class="target-badge" id="marbleBadge">Trials: 0 / 30</span>
             </div>
             <div class="jar-stage">
                 <div class="glass-jar">
@@ -449,26 +393,95 @@
                 <button class="btn-action clear" onclick="resetMarbles()">Clear</button>
             </div>
         </div>
-
         <div class="panel">
             <div class="panel-title"><span>Experimental Results</span></div>
             <table>
                 <thead>
-                    <tr>
-                        <th>Marble Color</th>
-                        <th>Frequency ($f$)</th>
-                        <th>Relative Frequency ($f/n$)</th>
-                    </tr>
+                    <tr><th>Marble Color</th><th>Frequency ($f$)</th><th>Relative Frequency ($f/n$)</th></tr>
                 </thead>
                 <tbody id="marbleTableBody"></tbody>
             </table>
         </div>
     </div>
+
+    <div id="tab-dice" class="workspace hidden">
+        <div class="panel">
+            <div class="panel-title">
+                <span>3D Physical Die Roller</span>
+                <span class="target-badge" id="diceBadge">Trials: 0 / 30</span>
+            </div>
+            <div class="dice-stage">
+                <div class="dice-wrapper">
+                    <div class="cube" id="cube3d">
+                        <div class="cube-face face-1"><span class="pip"></span></div>
+                        <div class="cube-face face-2"><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-3"><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-4"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                        <div class="cube-face face-5"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip pip-c"></span></div>
+                        <div class="cube-face face-6"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span></div>
+                    </div>
+                </div>
+                <div class="shadow" id="dieShadow"></div>
+            </div>
+            <div class="sim-controls">
+                <button class="btn-action primary" onclick="rollDie()">🎲 Roll Die</button>
+                <button class="btn-action clear" onclick="resetDie()">Clear</button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title"><span>Experimental Results</span></div>
+            <table>
+                <thead>
+                    <tr><th>Outcome Face</th><th>Frequency ($f$)</th><th>Relative Frequency ($f/n$)</th></tr>
+                </thead>
+                <tbody id="diceTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="tab-galton" class="workspace hidden">
+        <div class="panel">
+            <div class="panel-title">
+                <span>Triangular Plinko Pegboard</span>
+                <span class="target-badge" id="plinkoBadge">Trials: 0 / 30</span>
+            </div>
+            <div class="canvas-holder">
+                <canvas id="galtonCanvas" width="500" height="400"></canvas>
+            </div>
+            <div class="sim-controls">
+                <button class="btn-action primary" onclick="dropPlinkoBall()">🔴 Drop Ball</button>
+                <button class="btn-action clear" onclick="resetPlinko()">Clear</button>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-title"><span>Experimental Results</span></div>
+            <table>
+                <thead>
+                    <tr><th>Bin Number</th><th>Frequency ($f$)</th><th>Relative Frequency ($f/n$)</th></tr>
+                </thead>
+                <tbody id="galtonTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="export-card">
+        <div>
+            <strong style="color: #fff; font-size: 1.05rem;">📤 Submit Table Data to Master Sheet</strong>
+            <p style="margin: 3px 0 0 0; color: var(--text-dim); font-size: 0.85rem;" id="submitStatus">When your table finishes 30 trials, submit your data so the teacher can showcase class sums.</p>
+        </div>
+        <div>
+            <button class="submit-btn" id="submitBtn" onclick="submitToGoogleSheet()">🚀 Submit Table Results</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Tab switching
+    // Configured Google Apps Script Webhook Endpoint
+    const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyvb9PyQnTXioQhp580L3D2HB9D5kUvDIS6YcdjrO6vyyG-N6poICGAPAtvVvazqg1ITA/exec";
+
+    let activeTab = 'marble';
     function switchTab(tab) {
+        activeTab = tab;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.workspace').forEach(w => w.classList.add('hidden'));
         event.target.classList.add('active');
@@ -495,16 +508,59 @@
         } catch (e) {}
     }
 
-    /* SIM 1: 3D DIE */
+    /* 1. MARBLES */
+    const marbleTypes = [
+        { id: "red", name: "🔴 Red", color: "#ef4444" },
+        { id: "blue", name: "🔵 Blue", color: "#3b82f6" },
+        { id: "gold", name: "🟡 Gold", color: "#f59e0b" }
+    ];
+    let marbleCounts = { red: 0, blue: 0, gold: 0 };
+    let totalMarbleDraws = 0;
+
+    function renderMarbleTable() {
+        const tbody = document.getElementById('marbleTableBody');
+        tbody.innerHTML = '';
+        marbleTypes.forEach(m => {
+            const count = marbleCounts[m.id];
+            const relFreq = totalMarbleDraws > 0 ? count / totalMarbleDraws : 0;
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong style="color:${m.color}">${m.name}</strong></td>
+                    <td>${count}</td>
+                    <td>${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                        <div class="bar-shell"><div class="bar-fill" style="width: ${Math.min(relFreq * 200, 100)}%; background: ${m.color};"></div></div>
+                    </td>
+                </tr>`;
+        });
+        const badge = document.getElementById('marbleBadge');
+        badge.innerText = `Trials: ${totalMarbleDraws} / 30`;
+        badge.className = totalMarbleDraws >= 30 ? 'target-badge completed' : 'target-badge';
+    }
+
+    function drawMarble() {
+        const r = Math.random();
+        const drawn = r < 0.5 ? "red" : (r < 0.8 ? "blue" : "gold");
+        document.getElementById('drawnMarbleVisual').innerHTML = `<span class="marble-ball marble-${drawn}" style="width: 32px; height: 32px;"></span>`;
+        document.getElementById('drawnLabel').innerText = `Drawn: ${drawn.toUpperCase()}`;
+        marbleCounts[drawn]++;
+        totalMarbleDraws++;
+        renderMarbleTable();
+    }
+
+    function resetMarbles() {
+        marbleCounts = { red: 0, blue: 0, gold: 0 };
+        totalMarbleDraws = 0;
+        document.getElementById('drawnMarbleVisual').innerText = "❓";
+        document.getElementById('drawnLabel').innerText = "Ready to Draw";
+        renderMarbleTable();
+    }
+
+    /* 2. DIE */
     let dieCounts = [0, 0, 0, 0, 0, 0, 0];
     let totalDieRolls = 0;
     const faceRotations = {
-        1: { x: 0, y: 0 },
-        2: { x: 0, y: -90 },
-        3: { x: -90, y: 0 },
-        4: { x: 0, y: 90 },
-        5: { x: 90, y: 0 },
-        6: { x: 0, y: 180 }
+        1: { x: 0, y: 0 }, 2: { x: 0, y: -90 }, 3: { x: -90, y: 0 },
+        4: { x: 0, y: 90 }, 5: { x: 90, y: 0 }, 6: { x: 0, y: 180 }
     };
     let isDieRolling = false;
 
@@ -514,20 +570,18 @@
         for (let face = 1; face <= 6; face++) {
             const count = dieCounts[face];
             const relFreq = totalDieRolls > 0 ? count / totalDieRolls : 0;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>Face ${face}</strong></td>
-                <td>${count}</td>
-                <td>
-                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
-                    <div class="bar-shell">
-                        <div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>Face ${face}</strong></td>
+                    <td>${count}</td>
+                    <td>${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                        <div class="bar-shell"><div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div></div>
+                    </td>
+                </tr>`;
         }
-        document.getElementById('diceTotalRolls').innerText = `Total Rolls: ${totalDieRolls.toLocaleString()}`;
+        const badge = document.getElementById('diceBadge');
+        badge.innerText = `Trials: ${totalDieRolls} / 30`;
+        badge.className = totalDieRolls >= 30 ? 'target-badge completed' : 'target-badge';
     }
 
     function rollDie() {
@@ -557,7 +611,7 @@
         renderDieTable();
     }
 
-    /* SIM 2: PLINKO */
+    /* 3. PLINKO */
     const PLINKO_ROWS = 7;
     const PLINKO_BINS = PLINKO_ROWS + 1;
     let plinkoBinCounts = new Array(PLINKO_BINS).fill(0);
@@ -573,20 +627,18 @@
         for (let k = 0; k < PLINKO_BINS; k++) {
             const count = plinkoBinCounts[k];
             const relFreq = plinkoTotalBalls > 0 ? count / plinkoTotalBalls : 0;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong>Bin ${k}</strong></td>
-                <td>${count}</td>
-                <td>
-                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
-                    <div class="bar-shell">
-                        <div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>Bin ${k}</strong></td>
+                    <td>${count}</td>
+                    <td>${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
+                        <div class="bar-shell"><div class="bar-fill" style="width: ${Math.min(relFreq * 300, 100)}%;"></div></div>
+                    </td>
+                </tr>`;
         }
-        document.getElementById('galtonTotalDrops').innerText = `N = ${plinkoTotalBalls.toLocaleString()}`;
+        const badge = document.getElementById('plinkoBadge');
+        badge.innerText = `Trials: ${plinkoTotalBalls} / 30`;
+        badge.className = plinkoTotalBalls >= 30 ? 'target-badge completed' : 'target-badge';
     }
 
     function drawPlinkoScene() {
@@ -595,7 +647,6 @@
         const topY = 25;
         const boardHeight = 210;
 
-        // Pegboard
         pCtx.fillStyle = '#e2c99a';
         pCtx.beginPath();
         pCtx.moveTo(w / 2, topY);
@@ -607,23 +658,19 @@
         pCtx.lineWidth = 2;
         pCtx.stroke();
 
-        // Pegs
         const rowDist = 26;
         const pegColDist = 34;
         for (let r = 0; r < PLINKO_ROWS; r++) {
             const countInRow = r + 1;
             const startX = w / 2 - ((countInRow - 1) * pegColDist) / 2;
             for (let p = 0; p < countInRow; p++) {
-                const px = startX + p * pegColDist;
-                const py = topY + 28 + r * rowDist;
                 pCtx.fillStyle = '#473a2b';
                 pCtx.beginPath();
-                pCtx.arc(px, py, 3.5, 0, Math.PI * 2);
+                pCtx.arc(startX + p * pegColDist, topY + 28 + r * rowDist, 3.5, 0, Math.PI * 2);
                 pCtx.fill();
             }
         }
 
-        // Bins
         const binWidth = 36;
         const binHeight = 140;
         const binBaseY = 390;
@@ -642,7 +689,6 @@
             pCtx.strokeRect(bx, by, binWidth, binHeight);
         }
 
-        // Resting Balls
         restingBallVisuals.forEach(ball => {
             pCtx.fillStyle = '#ef4444';
             pCtx.beginPath();
@@ -650,7 +696,6 @@
             pCtx.fill();
         });
 
-        // Falling Balls
         for (let i = plinkoAnimatedBalls.length - 1; i >= 0; i--) {
             const b = plinkoAnimatedBalls[i];
             const pt = b.path[Math.floor(b.step)];
@@ -711,64 +756,70 @@
     }
     setInterval(drawPlinkoScene, 1000 / 60);
 
-    /* SIM 3: MARBLE DRAW */
-    const marbleTypes = [
-        { id: "red", name: "🔴 Red", color: "#ef4444" },
-        { id: "blue", name: "🔵 Blue", color: "#3b82f6" },
-        { id: "gold", name: "🟡 Gold", color: "#f59e0b" }
-    ];
-    let marbleCounts = { red: 0, blue: 0, gold: 0 };
-    let totalMarbleDraws = 0;
+    /* SUBMIT TO MASTER GOOGLE SHEET */
+    function submitToGoogleSheet() {
+        const cl = document.getElementById('classSelect').value;
+        const tb = document.getElementById('tableId').value.trim();
 
-    function renderMarbleTable() {
-        const tbody = document.getElementById('marbleTableBody');
-        tbody.innerHTML = '';
-        marbleTypes.forEach(m => {
-            const count = marbleCounts[m.id];
-            const relFreq = totalMarbleDraws > 0 ? count / totalMarbleDraws : 0;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><strong style="color:${m.color}">${m.name}</strong></td>
-                <td>${count}</td>
-                <td>
-                    ${relFreq.toFixed(4)} (${(relFreq * 100).toFixed(1)}%)
-                    <div class="bar-shell">
-                        <div class="bar-fill" style="width: ${Math.min(relFreq * 200, 100)}%; background: ${m.color};"></div>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(row);
+        if (!tb) {
+            alert("⚠️ Please enter your Table Number / Name at the top before submitting!");
+            return;
+        }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = "⏳ Submitting...";
+
+        let payload = {};
+
+        if (activeTab === 'marble') {
+            payload = {
+                task: "Marbles",
+                headers: ["Timestamp", "Class", "Table Name", "Total Draws", "Red (f)", "Blue (f)", "Gold (f)"],
+                rowValues: [new Date().toLocaleTimeString(), cl, tb, totalMarbleDraws, marbleCounts.red, marbleCounts.blue, marbleCounts.gold]
+            };
+        } else if (activeTab === 'dice') {
+            payload = {
+                task: "Die",
+                headers: ["Timestamp", "Class", "Table Name", "Total Rolls", "Face 1", "Face 2", "Face 3", "Face 4", "Face 5", "Face 6"],
+                rowValues: [new Date().toLocaleTimeString(), cl, tb, totalDieRolls, dieCounts[1], dieCounts[2], dieCounts[3], dieCounts[4], dieCounts[5], dieCounts[6]]
+            };
+        } else {
+            payload = {
+                task: "Plinko",
+                headers: ["Timestamp", "Class", "Table Name", "Total Drops", "Bin 0", "Bin 1", "Bin 2", "Bin 3", "Bin 4", "Bin 5", "Bin 6", "Bin 7"],
+                rowValues: [new Date().toLocaleTimeString(), cl, tb, plinkoTotalBalls, ...plinkoBinCounts]
+            };
+        }
+
+        fetch(GOOGLE_SHEET_WEBAPP_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(() => {
+            btn.innerText = "✅ Submitted!";
+            btn.style.background = "#22c55e";
+            document.getElementById('submitStatus').innerText = `Success: ${payload.task} data from ${tb} sent to master sheet!`;
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "🚀 Submit Table Results";
+                btn.style.background = "var(--accent-green)";
+            }, 3000);
+        })
+        .catch(err => {
+            alert("Error sending data. Please check your internet connection.");
+            btn.disabled = false;
+            btn.innerText = "🚀 Submit Table Results";
         });
-        document.getElementById('marbleTotalDraws').innerText = `Draws: ${totalMarbleDraws.toLocaleString()}`;
     }
 
-    function drawMarble() {
-        const pick = () => {
-            const r = Math.random();
-            return r < 0.5 ? "red" : (r < 0.8 ? "blue" : "gold");
-        };
-
-        const drawn = pick();
-        document.getElementById('drawnMarbleVisual').innerHTML = `<span class="marble-ball marble-${drawn}" style="width: 32px; height: 32px;"></span>`;
-        document.getElementById('drawnLabel').innerText = `Drawn: ${drawn.toUpperCase()}`;
-        marbleCounts[drawn]++;
-        totalMarbleDraws++;
-        renderMarbleTable();
-    }
-
-    function resetMarbles() {
-        marbleCounts = { red: 0, blue: 0, gold: 0 };
-        totalMarbleDraws = 0;
-        document.getElementById('drawnMarbleVisual').innerText = "❓";
-        document.getElementById('drawnLabel').innerText = "Ready to Draw";
-        renderMarbleTable();
-    }
-
-    // Initial table rendering
+    // Startup Init
+    renderMarbleTable();
     renderDieTable();
     renderPlinkoTable();
     drawPlinkoScene();
-    renderMarbleTable();
 </script>
 
 </body>
